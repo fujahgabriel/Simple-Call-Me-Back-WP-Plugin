@@ -8,7 +8,7 @@
  * Author: Fujah Gabriel
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: call-me-back
+ * Text Domain: simple-call-me-back
  * Domain Path: /languages
  * github: https://github.com/fujahgabriel/simple-call-me-back-wp-plugin
  */
@@ -76,27 +76,27 @@ class CallMeBackPlugin {
             self::PLUGIN_NAME,
             self::PLUGIN_NAME,
             'manage_options',
-            'call-me-back',
+            'simple-call-me-back',
             array($this, 'requests_page'),
             'dashicons-phone',
             26
         );
 
         add_submenu_page(
-            'call-me-back',
+            'simple-call-me-back',
             'Requests',
             'Requests',
             'manage_options',
-            'call-me-back',
+            'simple-call-me-back',
             array($this, 'requests_page')
         );
 
         add_submenu_page(
-            'call-me-back',
+            'simple-call-me-back',
             'Settings',
             'Settings',
             'manage_options',
-            'call-me-back-settings',
+            'simple-call-me-back-settings',
             array($this, 'settings_page')
         );
     }
@@ -563,8 +563,8 @@ class CallMeBackPlugin {
                                 </td>
                                 <td>
                                     <?php 
-                                    $edit_url = add_query_arg(array('page' => 'call-me-back', 'action' => 'edit', 'id' => $row->id), admin_url('admin.php'));
-                                    $delete_url = wp_nonce_url(add_query_arg(array('page' => 'call-me-back', 'action' => 'delete', 'id' => $row->id), admin_url('admin.php')), 'cmb_delete_request_' . $row->id);
+                                    $edit_url = add_query_arg(array('page' => 'simple-call-me-back', 'action' => 'edit', 'id' => $row->id), admin_url('admin.php'));
+                                    $delete_url = wp_nonce_url(add_query_arg(array('page' => 'simple-call-me-back', 'action' => 'delete', 'id' => $row->id), admin_url('admin.php')), 'cmb_delete_request_' . $row->id);
                                     ?>
                                     <a href="<?php echo esc_url($edit_url); ?>">Edit</a> | 
                                     <a href="<?php echo esc_url($delete_url); ?>" onclick="return confirm('Are you sure you want to delete this request?');" style="color: #a00;">Delete</a>
@@ -586,8 +586,8 @@ class CallMeBackPlugin {
                         echo wp_kses_post(paginate_links(array(
                             'base' => add_query_arg('paged', '%#%'),
                             'format' => '',
-                            'prev_text' => __('&laquo;', 'call-me-back'),
-                            'next_text' => __('&raquo;', 'call-me-back'),
+                            'prev_text' => __('&laquo;', 'simple-call-me-back'),
+                            'next_text' => __('&raquo;', 'simple-call-me-back'),
                             'total' => $total_pages,
                             'current' => $current_page
                         )));
@@ -614,7 +614,7 @@ class CallMeBackPlugin {
         ?>
         <div class="wrap">
             <h1>Edit Request</h1>
-            <a href="<?php echo esc_url(admin_url('admin.php?page=call-me-back')); ?>" class="page-title-action">Back to List</a>
+            <a href="<?php echo esc_url(admin_url('admin.php?page=simple-call-me-back')); ?>" class="page-title-action">Back to List</a>
             
             <form method="post">
                 <input type="hidden" name="cmb_action" value="update_request">
@@ -860,12 +860,12 @@ class CallMeBackPlugin {
             
             // Check permissions first
             if (!current_user_can('manage_options')) {
-                wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'call-me-back'));
+                wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'simple-call-me-back'));
             }
 
             // Check nonce
             if (!isset($_POST['cmb_export_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cmb_export_nonce'])), 'cmb_export_csv_nonce')) {
-                wp_die(esc_html__('Security check failed', 'call-me-back'));
+                wp_die(esc_html__('Security check failed', 'simple-call-me-back'));
             }
 
             global $wpdb;
