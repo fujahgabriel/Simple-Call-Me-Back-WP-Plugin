@@ -1,0 +1,239 @@
+/* Typography & Reset */
+.cmb-container, 
+.cmb-container * {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Floating Button */
+.cmb-floating-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 16px 28px;
+    border-radius: 50px;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 9999;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.cmb-floating-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 25px rgba(0,0,0,0.25);
+}
+
+.cmb-floating-btn:active {
+    transform: translateY(0);
+}
+
+/* Modal Overlay */
+.cmb-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.cmb-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal Content */
+.cmb-modal {
+    background: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 480px; /* Default Medium Size */
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Modal Sizes Classes (To be used via settings if needed, or by modifying max-width) */
+.cmb-modal.cmb-size-small { max-width: 380px; }
+.cmb-modal.cmb-size-medium { max-width: 480px; }
+.cmb-modal.cmb-size-large { max-width: 600px; }
+
+
+.cmb-modal-overlay.active .cmb-modal {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.cmb-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+    transition: background 0.2s;
+}
+
+.cmb-modal-close:hover {
+    background: #e4e6eb;
+    color: #333;
+}
+
+.cmb-modal-title {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+}
+
+/* Form Styles */
+.cmb-form-group {
+    margin-bottom: 20px;
+}
+
+.cmb-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #4a4a4a;
+}
+
+.cmb-form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e1e3e6;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    color: #333;
+    background: #fff;
+}
+
+.cmb-form-group input:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1);
+}
+
+.cmb-submit-btn {
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: background 0.2s;
+    display: block;
+    text-align: center;
+}
+
+.cmb-submit-btn:hover {
+    background: #005177;
+    transform: translateY(-1px);
+}
+
+.cmb-submit-btn:active {
+    transform: translateY(0);
+}
+
+.cmb-submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Messages */
+.cmb-message {
+    margin-top: 20px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cmb-message.success {
+    background-color: #e6f7ef;
+    color: #0d8a4f;
+    border: 1px solid #cef0df;
+}
+
+.cmb-message.error {
+    background-color: #fceceb;
+    color: #d12e2e;
+    border: 1px solid #fadddc;
+}
+
+/* Responsive Modal Sizes */
+@media (max-width: 480px) {
+    .cmb-modal {
+        padding: 30px 25px;
+        width: 100%;
+        max-width: 100% !important; /* Force full width on mobile */
+        border-radius: 20px 20px 0 0; /* Sheet style on mobile */
+        position: fixed;
+        bottom: 0;
+        top: auto;
+        transform: translateY(100%);
+        margin: 0;
+    }
+
+    .cmb-modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .cmb-modal-overlay.active .cmb-modal {
+        transform: translateY(0);
+    }
+    
+    .cmb-floating-btn {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
