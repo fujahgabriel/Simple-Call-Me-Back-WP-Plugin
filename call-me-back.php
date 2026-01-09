@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Simple Call Me Back
  * Description: A plugin to allow visitors to request a callback via a modal form.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Fujah Gabriel
  * License: GPL2
  * github: https://github.com/fujahgabriel/simple-call-me-back-wp-plugin
@@ -14,6 +14,9 @@ if (!defined('ABSPATH')) {
 
 class CallMeBackPlugin {
 
+    const VERSION = '1.0.1';
+    const PLUGIN_NAME = 'Simple Call Me Back';
+    const SPONSOR_URL = 'https://fujahgabriel.xyz/sponsor';
     private $table_name;
 
     public function __construct() {
@@ -65,8 +68,8 @@ class CallMeBackPlugin {
      */
     public function add_admin_menu() {
         add_menu_page(
-            'Simple Call Me Back',
-            'Simple Call Me Back',
+            self::PLUGIN_NAME,
+            self::PLUGIN_NAME,
             'manage_options',
             'call-me-back',
             array($this, 'requests_page'),
@@ -107,6 +110,11 @@ class CallMeBackPlugin {
         register_setting('cmb_settings_group', 'cmb_modal_size');
         register_setting('cmb_settings_group', 'cmb_show_floating_button');
         register_setting('cmb_settings_group', 'cmb_float_position');
+        register_setting('cmb_settings_group', 'cmb_float_margin_x');
+        register_setting('cmb_settings_group', 'cmb_float_margin_y');
+        // HubSpot Settings
+        register_setting('cmb_settings_group', 'cmb_enable_hubspot_sync');
+        register_setting('cmb_settings_group', 'cmb_hubspot_api_key');
     }
 
     /**
@@ -125,21 +133,23 @@ class CallMeBackPlugin {
 
         // Handle Button Position
         $position = get_option('cmb_float_position', 'bottom-right');
+        $margin_x = intval(get_option('cmb_float_margin_x', '30'));
+        $margin_y = intval(get_option('cmb_float_margin_y', '30'));
         $pos_css = '';
         
         switch ($position) {
             case 'top-left':
-                $pos_css = 'top: 30px; left: 30px; bottom: auto; right: auto;';
+                $pos_css = "top: {$margin_y}px; left: {$margin_x}px; bottom: auto; right: auto;";
                 break;
             case 'top-right':
-                $pos_css = 'top: 30px; right: 30px; bottom: auto; left: auto;';
+                $pos_css = "top: {$margin_y}px; right: {$margin_x}px; bottom: auto; left: auto;";
                 break;
             case 'bottom-left':
-                $pos_css = 'bottom: 30px; left: 30px; top: auto; right: auto;';
+                $pos_css = "bottom: {$margin_y}px; left: {$margin_x}px; top: auto; right: auto;";
                 break;
             case 'bottom-right':
             default:
-                $pos_css = 'bottom: 30px; right: 30px; top: auto; left: auto;';
+                $pos_css = "bottom: {$margin_y}px; right: {$margin_x}px; top: auto; left: auto;";
                 break;
         }
 
@@ -163,7 +173,7 @@ class CallMeBackPlugin {
         wp_add_inline_style('cmb-style', $custom_css);
 
         wp_enqueue_script('intl-tel-input', 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js', array(), '17.0.8', true);
-        wp_enqueue_script('cmb-script', plugin_dir_url(__FILE__) . 'assets/js/script.js', array('intl-tel-input'), '1.0.0', true);
+        wp_enqueue_script('cmb-script', plugin_dir_url(__FILE__) . 'assets/js/script.js', array('intl-tel-input'), self::VERSION, true);
         
         wp_localize_script('cmb-script', 'cmb_obj', array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -293,9 +303,52 @@ class CallMeBackPlugin {
         );
 
         if ($result) {
+            // Trigger HubSpot Sync
+            if (get_option('cmb_enable_hubspot_sync') && get_option('cmb_hubspot_api_key')) {
+                $this->sync_to_hubspot($name, $phone, $position, $company);
+            }
+
             wp_send_json_success(array('message' => 'Thank you! We will call you back soon.'));
         } else {
             wp_send_json_error(array('message' => 'Could not save request. Please try again.'));
+        }
+    }
+
+    /**
+     * Send data to HubSpot
+     */
+    private function sync_to_hubspot($name, $phone, $position, $company) {
+        $token = get_option('cmb_hubspot_api_key');
+        if (empty($token)) return;
+
+        // Split name into First/Last for better CRM data
+        $parts = explode(' ', trim($name), 2);
+        $firstname = $parts[0];
+        $lastname = isset($parts[1]) ? $parts[1] : '';
+
+        $data = array(
+            'properties' => array(
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'phone' => $phone,
+                'jobtitle' => $position,
+                'company' => $company,
+                'lifecyclestage' => 'lead'
+            )
+        );
+
+        $response = wp_remote_post('https://api.hubapi.com/crm/v3/objects/contacts', array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ),
+            'body' => json_encode($data),
+            'method' => 'POST',
+            'data_format' => 'body'
+        ));
+
+        if (is_wp_error($response)) {
+            error_log(self::PLUGIN_NAME . ' - HubSpot Sync Error: ' . $response->get_error_message());
         }
     }
 
@@ -502,7 +555,7 @@ class CallMeBackPlugin {
     public function settings_page() {
         ?>
         <div class="wrap">
-            <h1>Simple Call Me Back Settings</h1>
+            <h1><?php echo esc_html(self::PLUGIN_NAME); ?> Settings</h1>
             <form method="post" action="options.php">
                 <?php settings_fields('cmb_settings_group'); ?>
                 <?php do_settings_sections('cmb_settings_group'); ?>
@@ -566,6 +619,22 @@ class CallMeBackPlugin {
                     </tr>
 
                     <tr valign="top">
+                        <th scope="row">Margin X (px)</th>
+                        <td>
+                            <input type="number" name="cmb_float_margin_x" value="<?php echo esc_attr(get_option('cmb_float_margin_x', '30')); ?>" style="width: 80px;" />
+                            <p class="description">Horizontal distance from the edge (left or right).</p>
+                        </td>
+                    </tr>
+
+                    <tr valign="top">
+                        <th scope="row">Margin Y (px)</th>
+                        <td>
+                            <input type="number" name="cmb_float_margin_y" value="<?php echo esc_attr(get_option('cmb_float_margin_y', '30')); ?>" style="width: 80px;" />
+                            <p class="description">Vertical distance from the edge (top or bottom).</p>
+                        </td>
+                    </tr>
+
+                    <tr valign="top">
                         <th scope="row">Enable Floating Button</th>
                         <td>
                             <label>
@@ -575,8 +644,41 @@ class CallMeBackPlugin {
                         </td>
                     </tr>
                 </table>
+
+                <hr>
+                <h3>HubSpot Integration</h3>
+                <p class="description">Automatically create a contact in HubSpot when a callback is requested.</p>
+                <table class="form-table">
+                    <tr valign="top">
+                        <th scope="row">Enable HubSpot Sync</th>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="cmb_enable_hubspot_sync" value="1" <?php checked(get_option('cmb_enable_hubspot_sync'), '1'); ?> />
+                                Sync requests to HubSpot CRM
+                            </label>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">HubSpot Access Token</th>
+                        <td>
+                            <input type="password" name="cmb_hubspot_api_key" value="<?php echo esc_attr(get_option('cmb_hubspot_api_key')); ?>" class="regular-text" />
+                            <p class="description">Enter your Private App Access Token (from HubSpot Settings > Integrations > Private Apps).</p>
+                        </td>
+                    </tr>
+                </table>
                 
                 <?php submit_button(); ?>
+
+                <hr>
+                <div class="card" style="margin-top: 20px; max-width: 600px; background: #fff; padding: 15px; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
+                    <h2 style="margin-top: 0;">❤️ Support the Development</h2>
+                    <p>Your support helps keep <strong><?php echo esc_html(self::PLUGIN_NAME); ?></strong> free and ad-free for everyone.</p>
+                    <p>
+                        <a href="<?php echo esc_url(self::SPONSOR_URL); ?>" target="_blank" class="button button-secondary">
+                            Sponsor the Plugin
+                        </a>
+                    </p>
+                </div>
             </form>
         </div>
         <?php

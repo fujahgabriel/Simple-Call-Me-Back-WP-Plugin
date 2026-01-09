@@ -17,10 +17,13 @@ The plugin is designed to be lightweight and easy to configure.
 *   **CSV Export**: Easily export all requests to a CSV file for external processing.
 *   **Customization**:
     *   Change button text and colors.
-    *   Customize modal title and helpful subtext.
+    *   Customization of modal title and helpful subtext.
     *   Choose button position (bottom-right, bottom-left, top-right, top-left).
+    *   **Fine-tuned Positioning**: Adjust the specific X and Y margins for the floating button.
     *   Set modal size (small, medium, large).
     *   Configure submit button colors.
+*   **CRM Integration**:
+    *   **HubSpot**: Automatically sync valid callback requests to HubSpot CRM as contacts.
 *   **Shortcode Support**: Use `[call_me_back]` to place a trigger button anywhere on your site.
 
 ## Installation
@@ -44,6 +47,16 @@ You can also place a callback request button inside any post or page using the s
 
 *   `text` (optional): The text to display on the button.
 *   `class` (optional): Additional CSS class for styling.
+
+## Changelog
+
+### 1.1.0
+*   **New**: HubSpot Integration! You can now sync requests directly to HubSpot CRM.
+*   **New**: Added "Margin X" and "Margin Y" settings for precise positioning of the floating button.
+*   **Fixed**: Minor styling adjustments.
+
+### 1.0.0
+*   Initial Release.
 
 ## Screenshots
 
