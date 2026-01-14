@@ -27,14 +27,14 @@ The plugin is designed to be lightweight and easy to configure.
 *   **Notifications**:
     *   **Slack**: Send notifications to a Slack channel via Webhook.
     *   **Email**: Receive email alerts for every new request.
-*   **Shortcode Support**: Use `[call_me_back]` to place a trigger button anywhere on your site.
+*   **Shortcode Support**: Use `[lcbw_callback]` to place a trigger button anywhere on your site.
 
 ## Installation
 
 1.  Upload the `lunatec-callback-widget` folder to the `/wp-content/plugins/` directory.
 2.  Activate the plugin through the 'Plugins' menu in WordPress.
-3.  Go to **Simple Call Me Back > Settings** to configure the button appearance and form options.
-4.  Go to **Simple Call Me Back > Requests** to view submissions.
+3.  Go to **Lunatec Callback Widget > Settings** to configure the button appearance and form options.
+4.  Go to **Lunatec Callback Widget > Requests** to view submissions.
 
 ## Usage
 
@@ -45,7 +45,7 @@ By default, the plugin adds a floating button to the bottom-right corner of your
 You can also place a callback request button inside any post or page using the shortcode:
 
 ```
-[call_me_back text="Request a Call" class="my-custom-class"]
+[lcbw_callback_button text="Request a Call" class="my-custom-class"]
 ```
 
 *   `text` (optional): The text to display on the button.
