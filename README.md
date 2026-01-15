@@ -51,6 +51,31 @@ You can also place a callback request button inside any post or page using the s
 *   `text` (optional): The text to display on the button.
 *   `class` (optional): Additional CSS class for styling.
 
+## External Services
+
+This plugin may connect to the following external services when enabled in settings:
+
+### HubSpot CRM Integration
+When the HubSpot sync feature is enabled in plugin settings, this plugin connects to the HubSpot API to automatically create contacts from callback requests.
+
+**What data is sent**: Name, phone number, position, company name of visitors who submit callback requests.
+**When data is sent**: Only when a callback request is successfully submitted and HubSpot sync is enabled.
+**Service Provider**: HubSpot, Inc.
+**API Endpoint**: https://api.hubapi.com/crm/v3/objects/contacts
+**Terms of Service**: https://legal.hubspot.com/terms-of-service
+**Privacy Policy**: https://legal.hubspot.com/privacy-policy
+
+### Slack Integration
+When the Slack notification feature is enabled, this plugin sends webhook notifications to a configured Slack channel.
+
+**What data is sent**: Name, phone number, position, company name of visitors who submit callback requests.
+**When data is sent**: Only when a callback request is successfully submitted and Slack notifications are enabled.
+**Service Provider**: Slack Technologies, Inc.
+**Terms of Service**: https://slack.com/terms-of-service
+**Privacy Policy**: https://slack.com/privacy-policy
+
+**Note**: Email notifications are sent using WordPress's built-in wp_mail() function and do not connect to external services unless configured in your WordPress installation.
+
 ## Changelog
 
 ### 1.0.2
